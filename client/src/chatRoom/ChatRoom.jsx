@@ -27,12 +27,10 @@ class ChatRoom extends Component {
     const value = e.target.value;
     this.setState({ ...this.state, msg: value, count: this.state.count + 1 });
     if (this.state.count == 0) {
-      //here we say that user is typing
       // userIsTyping(true, crudChat.to);
     }
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
-      //post request or patch i guess in this case
       // userIsTyping(false, crudChat.to);
       this.setState({ ...this.state, count: 0 });
     }, 1000 * 5);
@@ -60,10 +58,6 @@ class ChatRoom extends Component {
 
   async componentDidMount() {
     crudChat.getReactInstance(this.setState.bind(this), this.state);
-    await crudChat.fetchChat().then(() => {
-      // console.log(this, crudChat);
-    });
-    if (crudChat.to) crudChat.openChat();
     if (this.state.hasNewConversation) {
       this.setState({ hasNewConversation: false });
     }

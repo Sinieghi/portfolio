@@ -1,5 +1,6 @@
 import { filter } from "../../utils/filter";
 import { findAndRemoveTwoCondition } from "../../utils/findAndRemove";
+import { getDateInMil } from "../../utils/getDateInMil";
 import { pushBool } from "../../utils/push";
 import { unshift } from "../../utils/unshift";
 import { User } from "./User";
@@ -149,7 +150,7 @@ class RequestHandler extends User {
     for (i = 0; i < l; i++) {
       m = i;
       for (j = i + 1; j < l; j++) {
-        if (new Date(mA[j].date) < new Date(mA[m].date)) {
+        if (getDateInMil(mA[j].date) < getDateInMil(mA[m].date)) {
           m = j;
         }
       }
