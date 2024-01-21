@@ -1,0 +1,36 @@
+import express from "express";
+import path, { dirname } from "path";
+import { corsConfig } from "./utils/corsConfig.js";
+import { errorHandlerMiddleware } from "./middleware/error-handler.js";
+import { notFound } from "./middleware/not-found.js";
+import { fileURLToPath } from "url";
+import { WebSocketServer } from "ws";
+import chatRoute from "./route/chatroom.js";
+import chat from "./db/db.js";
+const app = express();
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+app.use(corsConfig);
+app.use(express.json());
+app.use(chatRoute);
+app.use(express.static(path.resolve(__dirname, "../public")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client", "index.html"));
+});
+app.use(notFound);
+app.use(errorHandlerMiddleware);
+const port = 8000;
+export const server = app.listen(port, () => console.log(`on ${port}`));
+const ws = new WebSocketServer({ server });
+ws.on("connection", function connection(ws, wsReq) {
+  ws.onmessage = function (e) {
+    console.log(e);
+    try {
+      ws.uid = JSON.parse(e.data).uid;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+});
+chat.find("userCollection", null, {}).limit(5);
+console.log();
