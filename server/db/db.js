@@ -5,26 +5,28 @@ class ChatSchema {
   chatroom = {
     cId: "",
     from: {
+      uid: Number,
       name: "",
-      avatar: "",
+      avatar: null,
     },
     to: {
+      uid: Number,
       name: "",
-      avatar: "",
+      avatar: null,
     },
   };
-  msg = { msg: "", date: "", from: 1, to: "" };
+  msg = { msg: "", date: "", from: "", to: "" };
   user = {
     name: "",
     avatar: "",
     uid: Number,
   };
-  me = {
-    name: "Luiz Guilherme",
-    uid: 1,
-    avatar:
-      "https://firebasestorage.googleapis.com/v0/b/onfrete.appspot.com/o/WhatsApp%20Image%202023-11-28%20at%2006.47.40.jpeg?alt=media&token=2ceee553-e365-4b6a-9fae-c565a3d4097d",
-  };
+  // me = {
+  //   name: "Luiz Guilherme",
+  //   uid: 0,
+  //   avatar:
+  //     "https://firebasestorage.googleapis.com/v0/b/onfrete.appspot.com/o/WhatsApp%20Image%202023-11-28%20at%2006.47.40.jpeg?alt=media&token=2ceee553-e365-4b6a-9fae-c565a3d4097d",
+  // };
 
   msgCollection = [];
   chatroomCollection = [];
@@ -38,15 +40,10 @@ class ChatSchema {
     return this[variable];
   }
 
-  find(variable, field, value) {
+  find(variable, field) {
     this.collectionName = variable;
-    if (this.typeofBoolean(value)) return this;
-    if (isEmptyObj(value)) {
-      return this;
-    }
+    if (!field || isEmptyObj(field)) return this;
     //falta testar esses filtros que fiz
-    if (!field) return this;
-    if (isEmptyObj(field)) return this;
     let a = [];
     console.log(field, this[variable]);
     for (let key in field) {
@@ -77,10 +74,19 @@ class ChatSchema {
         if (this[variable][i][field] === value) return this[variable][i];
       }
     }
+    return null;
   }
 
-  typeofBoolean(val) {
-    return val !== "" || typeof val !== "undefined" || !isEmptyObj(val);
+  findOneAndRemove(variable, field, value) {
+    let a = [];
+    if (!value && value != 0) return;
+    console.log(variable, field, value);
+    for (let i = 0; i < this[variable].length; i++) {
+      console.log(this[variable][i][field], value);
+      if (this[variable][i][field] !== value) a[a.length] = this[variable][i];
+    }
+    this[variable] = a;
+    return null;
   }
 }
 

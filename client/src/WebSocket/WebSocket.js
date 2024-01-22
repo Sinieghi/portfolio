@@ -18,6 +18,8 @@ ws.onmessage = function (e) {
 export function sendUid(id) {
   try {
     if (ws.readyState == 0) return;
+
+    console.log(id);
     ws.send(JSON.stringify({ uid: id }));
   } catch (error) {
     console.log(error);

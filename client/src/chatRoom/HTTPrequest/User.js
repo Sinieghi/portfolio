@@ -1,15 +1,11 @@
 import { sendUid } from "../../WebSocket/WebSocket";
-import { findAndRemove } from "../../utils/findAndRemove";
 import { isEmptyObj } from "../../utils/isEmptyObj";
-import { unshift } from "../../utils/unshift";
 
 export class User {
   userCollection = [];
   user = {};
-  constructor(urls) {
-    this.baseUrl = urls[0];
-    this.baseMsgUrl = urls[1];
-    this.baseUserUrl = urls[2];
+  constructor() {
+    this.baseUserUrl = "/api/v1/user";
   }
 
   async createUser(data) {
@@ -20,24 +16,35 @@ export class User {
       },
       body: JSON.stringify({ ...data }),
     })
-      .then((u) => {
-        const user = JSON.parse(u);
-        this.userCollection = findAndRemove(
-          this.userCollection,
-          this.userCollection.length,
-          { var: "uid", value: user.uid }
-        );
-        this.userCollection = unshift(
-          this.userCollection,
-          this.userCollection.length,
-          user
-        );
-        sendUid(u.uid);
+      .then(async (u) => {
+        const { user } = await u.json();
+        console.log(user);
+        sendUid(user.uid);
       })
       .catch((e) => console.log(e));
+  }
+
+  async getUsers() {
+    try {
+      const res = await fetch(this.baseUserUrl + "/list", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { users } = await res.json();
+      this.userCollection = users;
+
+      return null;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   isThereAnyUser() {
     return isEmptyObj(this.user);
   }
 }
+
+export const crudUser = new User();

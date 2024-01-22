@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import { WebSocketServer } from "ws";
 import chatRoute from "./route/chatroom.js";
 import chat from "./db/db.js";
+import { Users } from "./controllers/users.js";
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,15 +22,19 @@ app.use(notFound);
 app.use(errorHandlerMiddleware);
 const port = 8000;
 export const server = app.listen(port, () => console.log(`on ${port}`));
-const ws = new WebSocketServer({ server });
+export const ws = new WebSocketServer({ server });
 ws.on("connection", function connection(ws, wsReq) {
+  console.log("Connected");
   ws.onmessage = function (e) {
-    console.log(e);
+    console.log(JSON.parse(e.data));
     try {
       ws.uid = JSON.parse(e.data).uid;
     } catch (error) {
       console.log(error);
     }
+  };
+  ws.onclose = function (ws) {
+    Users.removeUser(ws.target.uid);
   };
 });
 chat.find("userCollection", null, {}).limit(5);

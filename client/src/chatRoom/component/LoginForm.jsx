@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { crudChat } from "../HTTPrequest/CRUD";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import { crudUser } from "../HTTPrequest/User";
 
 const userInitial = {
   name: "",
@@ -50,7 +50,7 @@ const LoginForm = ({ setState, state }) => {
 
 function handleSubmit(e, user, reactSuper) {
   e.preventDefault();
-  crudChat
+  crudUser
     .createUser(user)
     .then(() => {
       reactSuper.setState({ ...reactSuper.state, showLoginForm: false });

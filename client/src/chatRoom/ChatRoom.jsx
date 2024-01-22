@@ -6,6 +6,8 @@ import ChatContent from "./ChatContent";
 import IteratedLI from "./IteratedLI";
 import SmallCloseBtn from "./component/SmallCloseBtn";
 import LoginForm from "./component/LoginForm";
+import { crudUser } from "./HTTPrequest/User";
+import UserList from "./component/UserList";
 class ChatRoom extends Component {
   constructor(props) {
     super(props);
@@ -16,9 +18,12 @@ class ChatRoom extends Component {
       showContact: false,
       hasNewConversation: true,
       warningBeforeAction: [],
+      chatroom: [],
+      users: [],
       changeContainers: false,
       count: 0,
       showLoginForm: true,
+      showUserList: false,
     };
     this.timeout;
   }
@@ -67,14 +72,27 @@ class ChatRoom extends Component {
   }
 
   render() {
+    // console.log(this.state);
     return (
       <Wrapper className="chat_container">
         {this.state.showLoginForm && (
           <LoginForm setState={this.setState.bind(this)} state={this.state} />
         )}
+
+        {this.state.showUserList && (
+          <UserList
+            setState={this.setState.bind(this)}
+            state={this.state}
+            user={crudUser.user}
+            users={crudUser.userCollection}
+          />
+        )}
+
         <button
           className="show_contact-trigger"
-          style={{ display: this.state.showContact ? "none" : "block" }}
+          style={{
+            display: this.state.showContact ? "none" : "block",
+          }}
           onClick={() =>
             this.setState({
               ...this.state,
@@ -100,7 +118,9 @@ class ChatRoom extends Component {
                   showContact: !this.state.showContact,
                 })
               }
-              style={{ display: this.state.showContact ? "flex" : "none" }}
+              style={{
+                display: this.state.showContact ? "flex" : "none",
+              }}
               className="close"
               id="cl"
             >
@@ -151,6 +171,20 @@ class ChatRoom extends Component {
         </div>
 
         <div className="input_box">
+          <button
+            className="user_list"
+            onClick={() => {
+              crudUser.getUsers().then(() => {
+                this.setState({
+                  ...this.state,
+                  users: crudUser.userCollection,
+                  showUserList: true,
+                });
+              });
+            }}
+          >
+            User list
+          </button>
           <form
             onSubmit={(e) => this.handleSubmit(e)}
             onKeyDown={(e) => {

@@ -3,10 +3,10 @@ import { findAndRemoveTwoCondition } from "../../utils/findAndRemove";
 import { getDateInMil } from "../../utils/getDateInMil";
 import { pushBool } from "../../utils/push";
 import { unshift } from "../../utils/unshift";
-import { User } from "./User";
-class RequestHandler extends User {
+class RequestHandler {
   constructor() {
-    super(["/api/v1/chatroom", "/api/v1/messages", "/api/v1/user"]);
+    this.baseUrl = "/api/v1/chatroom";
+    this.baseMsgUrl = "/api/v1/messages";
   }
   msg = "";
   to;
@@ -72,15 +72,10 @@ class RequestHandler extends User {
           "Content-Type": "application/json",
         },
       });
-      if (typeof this.setState === "function") {
-        this.chatroom[this.chatroom.length] = res.data.chatroom;
-        setTimeout(() => {
-          this.setState({
-            ...this.state,
-            chatroom: this.chatroom,
-          });
-        });
-      }
+      const chatroomRes = await res.json();
+      this.chatroom[this.chatroom.length] = chatroomRes;
+
+      return chatroomRes;
     } catch (error) {
       console.log(error);
     }
