@@ -129,11 +129,11 @@ class ChatRoom extends Component {
 
             <div className="contact-container">
               <ul className="user_message-container chat-open">
-                <p className="title">Conversas</p>
+                <p className="title">Talk</p>
                 {this.state.loading ? null : (
                   <>
                     {this.state.chatroom && this.state.chatroom.length == 0 ? (
-                      <p className="empty-conversation">Nenhum contato</p>
+                      <p className="empty-conversation">Empty contacts</p>
                     ) : (
                       <>
                         {this.state.chatroom &&
@@ -199,7 +199,7 @@ class ChatRoom extends Component {
               value={this.state.msg}
               onChange={(e) => this.handleChange(e)}
             />
-            <button className="btn_hover-scale submit_message">Enviar</button>
+            <button className="btn_hover-scale submit_message">Send</button>
           </form>
         </div>
       </Wrapper>

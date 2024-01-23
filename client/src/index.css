@@ -154,13 +154,14 @@ body {
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+
+textarea {
+  resize: none;
+  background-color: var(--color-cus-new-sec);
+  padding: 1rem;
 }
 
 button {
-  border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;

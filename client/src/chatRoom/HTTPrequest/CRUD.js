@@ -324,6 +324,32 @@ class RequestHandler {
     });
     this.scrollToBottom();
   }
+
+  containsLink(msg) {
+    let n = msg.length;
+    let httpsRef = "https";
+    let stStart = "";
+    let posStart = -1;
+    let posEnd = -1;
+
+    if (n == 0) throw new Error("empty msg, shouldn't happen...");
+
+    for (let i = 0; i < n; i++) {
+      for (let u = 0; u < httpsRef.length; u++) {
+        if (httpsRef[u] === msg[i + u]) stStart += msg[i + u];
+        else stStart = "";
+      }
+      if (stStart === httpsRef) posStart = i;
+      if (posStart != -1 && msg[i + 1] === " ") posEnd = i;
+    }
+    //need to replace those positions with link <a></a>
+    return { posStart, posEnd };
+  }
 }
 
 export const crudChat = new RequestHandler();
+
+let s =
+  "ASKNBDOksbfo sbPABF APSBF OAISBFOIsb oiabszofabsgoia https://onfrete.web.app ";
+console.log(crudChat.containsLink(s));
+console.log(s[53], s[75]);

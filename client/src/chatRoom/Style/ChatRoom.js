@@ -54,35 +54,42 @@ export const Wrapper = styled.main`
   }
   .input_box {
     box-shadow: var(--shadow-1);
+    background-color: var(--white);
     position: relative;
-    padding: 2rem;
     form {
-      margin: 0 auto;
-      width: fit-content;
+      padding: 5rem 10rem;
       display: flex;
       align-items: center;
     }
     textarea {
-      height: 9rem;
+      height: 3.2rem;
       margin: 0;
-      width: 30rem;
+      width: 100%;
+      border-bottom-left-radius: 50px;
+      border-top-left-radius: 50px;
     }
     textarea {
-      border: 0.1px solid var(--grey-900);
-      background-color: var(--clr-primary-10);
+      border: transparent;
+      box-shadow: var(--shadow-6);
+      background-color: transparent;
       align-content: end;
+      padding: 1rem;
+    }
+    textarea:focus {
+      outline-style: groove;
     }
     .submit_message {
-      padding: 2rem;
-      font-size: 1.8rem;
+      padding: 1.7rem;
+      font-size: 1.6rem;
       letter-spacing: 2px;
       font-family: "Courier New", Courier, monospace;
       font-weight: 200;
       background-color: var(--grey-500);
-      border: 0.2px solid var(--red-org);
       color: var(--white);
       z-index: 1;
-      margin-left: 5rem;
+      margin-left: 0rem;
+      border-top-right-radius: 50px;
+      border-bottom-right-radius: 50px;
     }
   }
   .contact-container {
