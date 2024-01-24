@@ -4,7 +4,7 @@ import { useState } from "react";
 import Avatar from "./Avatar";
 import { crudChat } from "../HTTPrequest/CRUD";
 
-const UserList = ({ users, setState, state, user }) => {
+const UserList = ({ users, setState, state }) => {
   const [addContact, setAddContact] = useState(false);
   return (
     <Wrapper>
@@ -34,9 +34,7 @@ const UserList = ({ users, setState, state, user }) => {
               </div>
               {addContact && (
                 <button
-                  onClick={() =>
-                    crudChat.createChat({ from: user.uid, to: e.uid })
-                  }
+                  onClick={() => crudChat.createChat(e)}
                   className="add_brn"
                 >
                   Add

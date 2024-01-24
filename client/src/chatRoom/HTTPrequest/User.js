@@ -1,5 +1,6 @@
 import { sendUid } from "../../WebSocket/WebSocket";
 import { isEmptyObj } from "../../utils/isEmptyObj";
+import { crudChat } from "./CRUD";
 
 export class User {
   userCollection = [];
@@ -20,6 +21,7 @@ export class User {
         const { user } = await u.json();
         console.log(user);
         sendUid(user.uid);
+        crudChat.setUser = user;
       })
       .catch((e) => console.log(e));
   }

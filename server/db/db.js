@@ -32,12 +32,12 @@ class ChatSchema {
   chatroomCollection = [];
   userCollection = [];
 
-  create(variable, value) {
+  create(collection, value) {
     let doc = {};
     doc.docId = idGenerator(10 ** 7, 10 ** 9);
     doc = { ...doc, ...value };
-    this[variable][this[variable].length] = doc;
-    return this[variable];
+    this[collection][this[collection].length] = doc;
+    return this[collection];
   }
 
   find(variable, field) {

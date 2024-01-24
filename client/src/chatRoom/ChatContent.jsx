@@ -37,7 +37,7 @@ const ChatContent = (prop) => {
                         crudChat?.user.name.length
                       )}
                 </p>
-                <p>{c.msg}</p>
+                <p>{crudChat.containsLink(c.msg)}</p>
                 <p className="date">{timeConvertor(c.date)}</p>
               </div>
             );

@@ -63,11 +63,11 @@ class RequestHandler {
     }
   }
 
-  async createChat(chatroom) {
+  async createChat(toUser) {
     try {
-      const res = await fetch(this.baseUrl, {
+      const res = await fetch(this.baseUrl + `/${this.user.uid}`, {
         method: "POST",
-        body: JSON.stringify(chatroom),
+        body: JSON.stringify({ toUser: toUser, fromUser: this.user }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -328,10 +328,13 @@ class RequestHandler {
   containsLink(msg) {
     let n = msg.length;
     let httpsRef = "https";
+    let link = "";
     let stStart = "";
-    let posStart = -1;
-    let posEnd = -1;
-
+    let s = -1;
+    let e = -1;
+    let str = "";
+    let breakLoop = false;
+    let j = 0;
     if (n == 0) throw new Error("empty msg, shouldn't happen...");
 
     for (let i = 0; i < n; i++) {
@@ -339,17 +342,35 @@ class RequestHandler {
         if (httpsRef[u] === msg[i + u]) stStart += msg[i + u];
         else stStart = "";
       }
-      if (stStart === httpsRef) posStart = i;
-      if (posStart != -1 && msg[i + 1] === " ") posEnd = i;
+      if (stStart === httpsRef) s = i;
+      j = i;
+      while (stStart === httpsRef && !breakLoop) {
+        if (msg[j] !== " ") link += msg[j];
+        else breakLoop = true;
+        j++;
+        if (!msg[j]) breakLoop = true;
+      }
+      if (this.findEndBoolean(msg, s, e, i)) e = i;
+      if (s != -1 && e != -1) {
+        str += `<a href=${link}>${link}`;
+        str += `</a>`;
+        s = -1;
+        e = -1;
+        breakLoop = false;
+        link = "";
+      } else if (s == -1 && e == -1) str += msg[i];
     }
     //need to replace those positions with link <a></a>
-    return { posStart, posEnd };
+    return { str };
+  }
+  findEndBoolean(msg, s, e, i) {
+    return s != -1 && (msg[i + 1] === " " || !msg[i + 1]) && e == -1;
   }
 }
 
 export const crudChat = new RequestHandler();
 
 let s =
-  "ASKNBDOksbfo sbPABF APSBF OAISBFOIsb oiabszofabsgoia https://onfrete.web.app ";
+  "https://onfrete.web.app ASKNBDOksbfo https://onfrete.web.app sbPABF APSBF OAISBFOIsb https://onfrete.web.app/cadastro oiabszofabsgoia dasmn dkasnd´knas´dknandsandoans´d ans´do nosndoans´ns´dn ásndoaknoaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdsa https://www.google.com/search?client=firefox-b-d&q=google+tradutor dslakndlk absdbaljbd kajsbdj baskbdkab kasbdbka https://web.whatsapp.com/";
 console.log(crudChat.containsLink(s));
 console.log(s[53], s[75]);
