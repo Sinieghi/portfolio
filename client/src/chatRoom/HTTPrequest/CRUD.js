@@ -64,21 +64,10 @@ class RequestHandler {
   }
 
   async createChat(toUser) {
-    try {
-      const res = await fetch(this.baseUrl + `/${this.user.uid}`, {
-        method: "POST",
-        body: JSON.stringify({ toUser: toUser, fromUser: this.user }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const chatroomRes = await res.json();
-      this.chatroom[this.chatroom.length] = chatroomRes;
-
-      return chatroomRes;
-    } catch (error) {
-      console.log(error);
-    }
+    this.to = toUser.to;
+    const { b, i } = this.getChatroom();
+    if (b) this.chatroom[i] = { toUser, fromUser: this.user };
+    else this.chatroom[this.chatroom.length] = { toUser, fromUser: this.user };
   }
 
   async persisteConversation(data) {
@@ -182,7 +171,7 @@ class RequestHandler {
     let i = 0;
     let b = false;
     for (i; i < n; i++) {
-      if (this.to === this.chatroom[i].to._id) {
+      if (this.to === this.chatroom[i].to.uid) {
         b = true;
         break;
       }

@@ -18,6 +18,6 @@ export class Chatroom {
   }
   static sendMessage(req, res) {}
 
-  //those methods will trigger when websocket user disconnect
+  //this methods will trigger when websocket user disconnect
   static removeChatroom() {}
 }
