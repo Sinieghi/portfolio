@@ -2,34 +2,13 @@ import { isEmptyObj } from "../utils/isEmptyObj.js";
 import { idGenerator } from "../utils/idGenerator.js";
 
 class ChatSchema {
-  chatroom = {
-    cId: "",
-    from: {
-      uid: Number,
-      name: "",
-      avatar: null,
-    },
-    to: {
-      uid: Number,
-      name: "",
-      avatar: null,
-    },
-  };
   msg = { msg: "", date: "", from: "", to: "" };
   user = {
     name: "",
     avatar: "",
     uid: Number,
   };
-  // me = {
-  //   name: "Luiz Guilherme",
-  //   uid: 0,
-  //   avatar:
-  //     "https://firebasestorage.googleapis.com/v0/b/onfrete.appspot.com/o/WhatsApp%20Image%202023-11-28%20at%2006.47.40.jpeg?alt=media&token=2ceee553-e365-4b6a-9fae-c565a3d4097d",
-  // };
-
   msgCollection = [];
-  chatroomCollection = [];
   userCollection = [];
 
   create(collection, value) {
@@ -43,18 +22,37 @@ class ChatSchema {
   find(variable, field) {
     this.collectionName = variable;
     if (!field || isEmptyObj(field)) return this;
-    //falta testar esses filtros que fiz
+
     let a = [];
     console.log(field, this[variable]);
     for (let key in field) {
       for (let i = 0; i < this[variable].length; i++) {
         if (this[variable][i][key] === field[key]) {
-          a[a.length] = this[variable][i][key];
+          a[a.length] = this[variable][i];
         }
+      }
+    }
+    this[variable] = a;
+    console.log(this[variable]);
+    return this;
+  }
+
+  findChat(variable, field) {
+    this.collectionName = variable;
+    let a = [];
+    console.log("xxx", field, this[variable]);
+
+    for (let i = 0; i < this[variable].length; i++) {
+      if (
+        this[variable][i].to === field.to &&
+        this[variable][i].from === field.from
+      ) {
+        a[a.length] = this[variable][i];
       }
     }
 
     this[variable] = a;
+    console.log(this[variable]);
     return this;
   }
 

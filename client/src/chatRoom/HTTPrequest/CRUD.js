@@ -1,8 +1,7 @@
-import { filter } from "../../utils/filter";
-import { findAndRemoveTwoCondition } from "../../utils/findAndRemove";
+import { findAndRemove } from "../../utils/findAndRemove";
 import { getDateInMil } from "../../utils/getDateInMil";
-import { pushBool } from "../../utils/push";
 import { unshift } from "../../utils/unshift";
+import { crudUser } from "./User";
 class RequestHandler {
   constructor() {
     this.baseUrl = "/api/v1/chatroom";
@@ -21,9 +20,8 @@ class RequestHandler {
     this.toName = val;
   }
   updateMyChatroomWhenSendingMessage(state) {
-    this.chat[crudChat.chat.length] = {
-      msg: state.msg,
-      date: state.date,
+    this.chat[this.chat.length] = {
+      ...state.msgData,
     };
   }
   checkIfIsNewContact(position) {
@@ -34,45 +32,41 @@ class RequestHandler {
     this.to = incomeUid;
     this.createChat();
   }
-  async fetchChat(uid) {
+
+  async createChat(toUser) {
+    this.to = toUser.to;
+    this.chatroom = findAndRemove(this.chatroom, this.chatroom.length, {
+      var: "uid",
+      value: toUser.uid,
+    });
+    this.chatroom = unshift(this.chatroom, this.chatroom.length, toUser);
+    this.setState({ ...this.state, chatroom: this.chatroom });
+  }
+
+  async fetchMsgsToMe() {
     try {
       this.setState({ ...this.state, loading: true });
-      const res = await fetch(this.baseUrl + `/uid=${uid}` + `?to=${this.to}`);
-      //só para não ter erro no console
-      if (!res.data) return;
-      this.blocklist = filter(res.data.chatroom, res.data.chatroom.length, {
-        value: true,
-        var: "block",
+      const res = await fetch(this.baseUrl + `/${crudUser.user.uid}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uid: this.to }),
       });
-      this.chatroom = findAndRemoveTwoCondition(
-        res.data.chatroom,
-        res.data.chatroom.length,
-        { value: [false, true], var: ["hide", "block"] }
-      );
-      this.status = res.status;
-      this.setState({
-        ...this.state,
-        loading: false,
-        chatroom: this.chatroom,
-        blocklist: this.blocklist,
-        warningBeforeAction: pushBool(this.chatroom.length, false),
-      });
+      const data = await res.json();
+      this.chat = data.chat;
+      this.toMeChat = data.toMeChat;
+
+      setTimeout(() => this.setState({ ...this.state, loading: false }));
+      return res.status;
     } catch (error) {
       this.setState({ ...this.state, loading: false });
       console.log(error);
     }
   }
 
-  async createChat(toUser) {
-    this.to = toUser.to;
-    const { b, i } = this.getChatroom();
-    if (b) this.chatroom[i] = { toUser, fromUser: this.user };
-    else this.chatroom[this.chatroom.length] = { toUser, fromUser: this.user };
-  }
-
   async persisteConversation(data) {
     try {
-      this.setState({ ...this.state, loading: true });
       await fetch(this.baseMsgUrl, {
         method: "POST",
         body: JSON.stringify(data),
@@ -91,21 +85,6 @@ class RequestHandler {
 
   async getToId(id) {
     this.to = id;
-  }
-
-  async fetchMsgsToMe() {
-    try {
-      this.setState({ ...this.state, loading: true });
-      const res = await fetch(
-        this.baseUrl + "/received-message" + `?to=${this.to}`
-      );
-      this.toMeChat = res.data.chatroom;
-      setTimeout(() => this.setState({ ...this.state, loading: false }));
-      return res.status;
-    } catch (error) {
-      this.setState({ ...this.state, loading: false });
-      console.log(error);
-    }
   }
 
   closeConversation() {
@@ -145,23 +124,16 @@ class RequestHandler {
   }
 
   defineCurrentConversation() {
-    if (!this.to || !this.chatroom || this.chatroom.length == 0) return null;
-    let i = this.getChatroom().i;
-    this.receiver = this.chatroom[i].to.name;
-    if (this.boolHandler(i)) {
-      this.chat = this.toMeChat.chat;
-    } else if (this.boolHandle(i)) {
-      this.chat = this.chatroom[i].chat;
-    } else {
-      this.checkIfIsNewContact(i);
-      this.chat = RequestHandler.mergeMessageOperation(
-        this.chatroom[i].chat,
-        this.chatroom[i].chat.length,
-        this.toMeChat && this.toMeChat.chat,
-        this.toMeChat && this.toMeChat.chat.length,
-        true
-      );
-    }
+    let { i } = this.getChatroom();
+    this.receiver = this.chatroom[i].name;
+    this.checkIfIsNewContact(i);
+    this.chat = RequestHandler.mergeMessageOperation(
+      this.chat,
+      this.chat.length,
+      this.toMeChat,
+      this.toMeChat.length
+    );
+    console.log(this);
   }
 
   //método responsável por entregar a posição do chatroom em que está aberto
@@ -171,7 +143,7 @@ class RequestHandler {
     let i = 0;
     let b = false;
     for (i; i < n; i++) {
-      if (this.to === this.chatroom[i].to.uid) {
+      if (this.to === this.chatroom[i].uid) {
         b = true;
         break;
       }
@@ -250,36 +222,28 @@ class RequestHandler {
     this.setState = setState;
   }
 
-  async openChat(chatroom) {
+  async openChat(userFromList) {
     this.setState({
       ...this.state,
       loading: true,
     });
-    if (chatroom) {
-      let _id = chatroom.to._id || chatroom.to;
-      crudChat.getToId(_id);
-    }
-    if (chatroom && chatroom.hide) {
-      await this.setThisChatroom(chatroom, !chatroom.hide).then(async () => {
-        await crudChat.fetchMsgsToMe().then(() => {
-          this.openHandler();
-        });
-      });
-    } else {
-      await crudChat.fetchMsgsToMe().then(() => {
-        this.openHandler();
-      });
-    }
+
+    crudChat.getToId(userFromList.uid);
+
+    await crudChat.fetchMsgsToMe().then(() => {
+      this.openHandler(userFromList);
+    });
   }
 
-  //acredito que o defineConversation está no timing errado, tem que realocar a inicialização dele
-  openHandler() {
+  openHandler(userFromList) {
     this.defineCurrentConversation();
+    this.receiver = userFromList.name;
     setTimeout(() => {
       this.setState({
         ...this.state,
         chat: this.chat,
         loading: false,
+        openChat: true,
       });
       this.scrollToBottom();
     });
@@ -296,24 +260,6 @@ class RequestHandler {
     });
   }
 
-  //vou deixar essa ideia para depois de puxar a versão atual, pois vai demorar para implementar isso
-  userIsTyping(typing) {
-    if (typing.isTyping) {
-      this.chat[this.chat.length] = {
-        displayTyping: typing.isTyping,
-        identifier: true,
-      };
-    } else {
-      delete this.chat[this.chat.length - 1];
-    }
-    if (typeof this.setState !== "function") return;
-    this.setState({
-      ...this.state,
-      chat: this.chat,
-    });
-    this.scrollToBottom();
-  }
-
   containsLink(msg) {
     let n = msg.length;
     let httpsRef = "https";
@@ -324,6 +270,7 @@ class RequestHandler {
     let str = "";
     let breakLoop = false;
     let j = 0;
+    console.log(n);
     if (n == 0) throw new Error("empty msg, shouldn't happen...");
 
     for (let i = 0; i < n; i++) {
@@ -350,7 +297,8 @@ class RequestHandler {
       } else if (s == -1 && e == -1) str += msg[i];
     }
     //need to replace those positions with link <a></a>
-    return { str };
+    console.log(s, e);
+    return str;
   }
   findEndBoolean(msg, s, e, i) {
     return s != -1 && (msg[i + 1] === " " || !msg[i + 1]) && e == -1;
@@ -359,7 +307,7 @@ class RequestHandler {
 
 export const crudChat = new RequestHandler();
 
-let s =
-  "https://onfrete.web.app ASKNBDOksbfo https://onfrete.web.app sbPABF APSBF OAISBFOIsb https://onfrete.web.app/cadastro oiabszofabsgoia dasmn dkasnd´knas´dknandsandoans´d ans´do nosndoans´ns´dn ásndoaknoaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdsa https://www.google.com/search?client=firefox-b-d&q=google+tradutor dslakndlk absdbaljbd kajsbdj baskbdkab kasbdbka https://web.whatsapp.com/";
-console.log(crudChat.containsLink(s));
-console.log(s[53], s[75]);
+// let s =
+//   "https://onfrete.web.app ASKNBDOksbfo https://onfrete.web.app sbPABF APSBF OAISBFOIsb https://onfrete.web.app/cadastro oiabszofabsgoia dasmn dkasnd´knas´dknandsandoans´d ans´do nosndoans´ns´dn ásndoaknoaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasdsa https://www.google.com/search?client=firefox-b-d&q=google+tradutor dslakndlk absdbaljbd kajsbdj baskbdkab kasbdbka https://web.whatsapp.com/";
+// console.log(crudChat.containsLink(s));
+// console.log(s[53], s[75]);

@@ -11,18 +11,15 @@ const IteratedLI = ({ chatroom }) => {
         color: chatroom.unread ? "var(--blue-ocn)" : "var(--grey-900)",
       }}
       onClick={() => {
-        crudChat.fetchChat().then(() => {
-          if (chatroom.block) return;
-          crudChat.toNameCollector = chatroom.to.name;
-          crudChat.openChat(chatroom);
-          chatroom.unread = false;
-        });
+        crudChat.toNameCollector = chatroom.name;
+        crudChat.openChat(chatroom);
+        chatroom.unread = false;
       }}
     >
       <div className="avatar">
-        {<Avatar name={chatroom.to.name} avatar={chatroom.to.avatar} />}{" "}
+        {<Avatar name={chatroom.name} avatar={chatroom.avatar} />}{" "}
       </div>
-      {formatFirstName(chatroom.to.name, chatroom.to.name.length)}
+      {formatFirstName(chatroom.name, chatroom.name.length)}
     </li>
   );
 };

@@ -1,4 +1,6 @@
 import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
 import path, { dirname } from "path";
 import { corsConfig } from "./utils/corsConfig.js";
 import { errorHandlerMiddleware } from "./middleware/error-handler.js";
@@ -8,6 +10,7 @@ import { WebSocketServer } from "ws";
 import chatRoute from "./route/chatroom.js";
 import chat from "./db/db.js";
 import { Users } from "./controllers/users.js";
+import { connectToCluster } from "./db/connect.js";
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -22,6 +25,7 @@ app.use(notFound);
 app.use(errorHandlerMiddleware);
 const port = 8000;
 export const server = app.listen(port, () => console.log(`on ${port}`));
+export const mongoClient = await connectToCluster(process.env.MONGO_URI);
 export const ws = new WebSocketServer({ server });
 ws.on("connection", function connection(ws, wsReq) {
   console.log("Connected");
@@ -37,5 +41,6 @@ ws.on("connection", function connection(ws, wsReq) {
     Users.removeUser(ws.target.uid);
   };
 });
+
 chat.find("userCollection", null, {}).limit(5);
 console.log();

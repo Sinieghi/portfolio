@@ -1,9 +1,11 @@
 import { timeConvertor } from "../utils/dateOrCurrencyFix";
 import { formatFirstName } from "../utils/formatUserName";
 import { crudChat } from "./HTTPrequest/CRUD";
+import { crudUser } from "./HTTPrequest/User";
 // import TypingAnimated from "./TypingAnimated";
 
 const ChatContent = (prop) => {
+  console.log(prop.state.chat);
   return (
     <article
       className="conversation"
@@ -16,6 +18,7 @@ const ChatContent = (prop) => {
         {prop.state.chat &&
           prop.state.chat.map((c, i) => {
             // if (c.displayTyping) return <TypingAnimated key={i} />;
+            console.log(c.msg);
             return (
               <div
                 key={i}
@@ -30,13 +33,14 @@ const ChatContent = (prop) => {
                       : "var(--clr-primary-red-4)",
                   }}
                 >
-                  {crudChat.toName && crudChat.user && c.identifier
+                  {c.identifier
                     ? formatFirstName(crudChat?.toName, crudChat?.toName.length)
                     : formatFirstName(
-                        crudChat?.user.name,
-                        crudChat?.user.name.length
+                        crudUser?.user.name,
+                        crudUser?.user.name.length
                       )}
                 </p>
+                {/* this is not working, anchor is just textContent here  */}
                 <p>{crudChat.containsLink(c.msg)}</p>
                 <p className="date">{timeConvertor(c.date)}</p>
               </div>

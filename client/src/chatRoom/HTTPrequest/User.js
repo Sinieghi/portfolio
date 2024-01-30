@@ -1,12 +1,12 @@
 import { sendUid } from "../../WebSocket/WebSocket";
 import { isEmptyObj } from "../../utils/isEmptyObj";
-import { crudChat } from "./CRUD";
 
 export class User {
   userCollection = [];
   user = {};
   constructor() {
     this.baseUserUrl = "/api/v1/user";
+    this.createUser.apply;
   }
 
   async createUser(data) {
@@ -21,7 +21,7 @@ export class User {
         const { user } = await u.json();
         console.log(user);
         sendUid(user.uid);
-        crudChat.setUser = user;
+        this.user = user;
       })
       .catch((e) => console.log(e));
   }
@@ -48,5 +48,4 @@ export class User {
     return isEmptyObj(this.user);
   }
 }
-
 export const crudUser = new User();

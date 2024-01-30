@@ -8,18 +8,22 @@ import SmallCloseBtn from "./component/SmallCloseBtn";
 import LoginForm from "./component/LoginForm";
 import { crudUser } from "./HTTPrequest/User";
 import UserList from "./component/UserList";
+import { push } from "../utils/push";
 class ChatRoom extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      msg: "",
-      date: null,
+      msgData: {
+        msg: "",
+        from: "",
+        to: "",
+      },
       loading: false,
       showContact: false,
-      hasNewConversation: true,
-      warningBeforeAction: [],
+      openChat: false,
       chatroom: [],
       users: [],
+      chat: [],
       changeContainers: false,
       count: 0,
       showLoginForm: true,
@@ -30,7 +34,7 @@ class ChatRoom extends Component {
 
   handleChange(e) {
     const value = e.target.value;
-    this.setState({ ...this.state, msg: value, count: this.state.count + 1 });
+    this.setState({ ...this.state, msgData: { msg: value } });
     if (this.state.count == 0) {
       // userIsTyping(true, crudChat.to);
     }
@@ -43,29 +47,31 @@ class ChatRoom extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    if (this.state.msg === "") return;
+    if (this.state.msgData.msg === "") return;
+    let msgData = {
+      from: crudUser.user.uid,
+      to: crudChat.to,
+      date: new Date(),
+      msg: this.state.msgData.msg,
+    };
     this.setState({
       ...this.state,
-      date: new Date(),
+      chat: push(this.state.chat, this.state.chat.length, msgData),
+      loading: true,
+      msgData,
     });
-
-    setTimeout(() => {
-      crudChat.updateMyChatroomWhenSendingMessage(this.state);
-      crudChat.persisteConversation({ ...this.state });
-      this.setState({ ...this.state, msg: "", date: null });
-    }, 100);
+    crudChat
+      .persisteConversation({ ...this.state })
+      .then(() => this.setState({ ...this.state, msgData: {} }));
   }
 
   keys(e) {
-    if (this.state.msg === "") return;
+    if (this.state.msgData.msg === "") return;
     if (e.key === "Enter") this.handleSubmit(e);
   }
 
   async componentDidMount() {
     crudChat.getReactInstance(this.setState.bind(this), this.state);
-    if (this.state.hasNewConversation) {
-      this.setState({ hasNewConversation: false });
-    }
   }
   componentDidUpdate() {
     crudChat.getReactInstance(this.setState.bind(this), this.state);
@@ -143,7 +149,7 @@ class ChatRoom extends Component {
                                 className="list-container"
                                 style={{
                                   backgroundColor:
-                                    r.to._id === crudChat.to
+                                    r.uid === crudChat.to
                                       ? "var(--clr-primary-red-3)"
                                       : "var(--white)",
                                   borderTopLeftRadius: "9px",
@@ -167,7 +173,9 @@ class ChatRoom extends Component {
               </ul>
             </div>
           </div>
-          <ChatContent state={this.state} styleHandler={this.styleHandler} />
+          {this.state.openChat && (
+            <ChatContent state={this.state} styleHandler={this.styleHandler} />
+          )}
         </div>
 
         <div className="input_box">
@@ -196,7 +204,7 @@ class ChatRoom extends Component {
               id="text"
               name="msg"
               minLength={1}
-              value={this.state.msg}
+              value={this.state.msgData.msg}
               onChange={(e) => this.handleChange(e)}
             />
             <button className="btn_hover-scale submit_message">Send</button>
@@ -214,8 +222,9 @@ class ChatRoom extends Component {
     }
     return a;
   }
+
   handleClickCloseChatroom(e, chatroom) {
-    crudChat.setThisChatroom(chatroom, !chatroom.hide);
+    console.log(e, chatroom);
   }
 
   styleHandler(identifier) {

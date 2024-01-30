@@ -9,23 +9,19 @@ const UserList = ({ users, setState, state }) => {
   return (
     <Wrapper>
       <div className="users_container">
+        <button
+          type="button"
+          onClick={() =>
+            setState({
+              ...state,
+              showUserList: false,
+            })
+          }
+          className="btn-close"
+        ></button>
         {users.map((e, i) => {
-          console.log(e);
           return (
             <div key={i} className="user" onClick={() => setAddContact(true)}>
-              <button
-                type="button"
-                onClick={() =>
-                  setState({
-                    ...state,
-                    showUserList: false,
-                  })
-                }
-                className="close"
-                id="cl"
-              >
-                &times;
-              </button>
               <div className="image_cont">
                 <Avatar avatar={e.avatar} name={e.name} />
               </div>
