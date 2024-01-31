@@ -1,15 +1,16 @@
+import { WebSocket } from "ws";
 import chatroom from "../db/db.js";
 import { ws } from "../index.js";
 
 export class Chatroom {
   static async sendMessage(req, res) {
-    chatroom.create("msgCollection", req.body.msgData);
+    chatroom.create("msgCollection", req.body);
     ws.clients.forEach((cl) => {
-      if (cl.uid === req.body.msgData.to && cl.readyState === WebSocket.OPEN) {
+      if (cl.uid === req.body.to && cl.readyState === WebSocket.OPEN) {
         cl.send(
           JSON.stringify({
-            msg: {
-              ...req.body.msgData,
+            msgBody: {
+              ...req.body,
               identifier: true,
               unread: true,
             },
@@ -21,7 +22,6 @@ export class Chatroom {
   }
 
   static getChatMessages(req, res) {
-    console.log(req.body, req.params);
     const toMeChat = chatroom.findChat("msgCollection", {
       from: req.body.uid,
       to: JSON.parse(req.params.uid),
@@ -30,9 +30,32 @@ export class Chatroom {
       from: JSON.parse(req.params.uid),
       to: req.body.uid,
     });
+    console.log(
+      "loga aqui cara...",
+      chatroom.msgCollection,
+      JSON.parse(req.params.uid),
+      req.body.uid
+    );
     res
       .status(201)
       .json({ chat: chat.msgCollection, toMeChat: toMeChat.msgCollection });
+  }
+
+  static updateChatroomWhenOpen(req, res) {
+    ws.clients.forEach((cl) => {
+      if (cl.uid === req.body.toUserId && cl.readyState === WebSocket.OPEN) {
+        delete req.body.toUserId;
+        cl.send(
+          JSON.stringify({
+            chatroomWasOpen: {
+              ...req.body,
+              newContact: true,
+            },
+          })
+        );
+      }
+    });
+    res.sendStatus(201);
   }
 
   //this methods will trigger when websocket user disconnect

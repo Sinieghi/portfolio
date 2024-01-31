@@ -67,6 +67,7 @@ export const Wrapper = styled.main`
       width: 100%;
       border-bottom-left-radius: 50px;
       border-top-left-radius: 50px;
+      color: var(--grey-900);
     }
     textarea {
       border: transparent;

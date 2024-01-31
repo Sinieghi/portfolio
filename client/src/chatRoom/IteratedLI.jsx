@@ -2,7 +2,7 @@ import { formatFirstName } from "../utils/formatUserName";
 import { crudChat } from "./HTTPrequest/CRUD";
 import PropTypes from "prop-types";
 import Avatar from "./component/Avatar";
-const IteratedLI = ({ chatroom }) => {
+const IteratedLI = ({ chatroom, state, setState }) => {
   return (
     <li
       style={{
@@ -11,9 +11,19 @@ const IteratedLI = ({ chatroom }) => {
         color: chatroom.unread ? "var(--blue-ocn)" : "var(--grey-900)",
       }}
       onClick={() => {
-        crudChat.toNameCollector = chatroom.name;
-        crudChat.openChat(chatroom);
-        chatroom.unread = false;
+        new Promise((resolve) => {
+          crudChat.toNameCollector = chatroom.name;
+          crudChat.openChat(chatroom, resolve);
+        }).then(() => {
+          setState({
+            ...state,
+            chat: crudChat.chat,
+            loading: false,
+            openChat: true,
+          });
+          chatroom.unread = false;
+          crudChat.scrollToBottom();
+        });
       }}
     >
       <div className="avatar">
@@ -24,6 +34,8 @@ const IteratedLI = ({ chatroom }) => {
   );
 };
 IteratedLI.propTypes = {
+  setState: PropTypes.func,
+  state: PropTypes.object,
   chatroom: PropTypes.object,
 };
 export default IteratedLI;

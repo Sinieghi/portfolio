@@ -16,6 +16,7 @@ class ChatSchema {
     doc.docId = idGenerator(10 ** 7, 10 ** 9);
     doc = { ...doc, ...value };
     this[collection][this[collection].length] = doc;
+    console.log("should create", this[collection]);
     return this[collection];
   }
 
@@ -24,7 +25,6 @@ class ChatSchema {
     if (!field || isEmptyObj(field)) return this;
 
     let a = [];
-    console.log(field, this[variable]);
     for (let key in field) {
       for (let i = 0; i < this[variable].length; i++) {
         if (this[variable][i][key] === field[key]) {
@@ -33,16 +33,15 @@ class ChatSchema {
       }
     }
     this[variable] = a;
-    console.log(this[variable]);
     return this;
   }
 
   findChat(variable, field) {
     this.collectionName = variable;
     let a = [];
-    console.log("xxx", field, this[variable]);
 
     for (let i = 0; i < this[variable].length; i++) {
+      console.log(this[variable][i], field);
       if (
         this[variable][i].to === field.to &&
         this[variable][i].from === field.from
@@ -50,9 +49,7 @@ class ChatSchema {
         a[a.length] = this[variable][i];
       }
     }
-
     this[variable] = a;
-    console.log(this[variable]);
     return this;
   }
 
@@ -78,9 +75,7 @@ class ChatSchema {
   findOneAndRemove(variable, field, value) {
     let a = [];
     if (!value && value != 0) return;
-    console.log(variable, field, value);
     for (let i = 0; i < this[variable].length; i++) {
-      console.log(this[variable][i][field], value);
       if (this[variable][i][field] !== value) a[a.length] = this[variable][i];
     }
     this[variable] = a;

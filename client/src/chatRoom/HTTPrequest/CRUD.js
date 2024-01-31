@@ -1,5 +1,6 @@
 import { findAndRemove } from "../../utils/findAndRemove";
 import { getDateInMil } from "../../utils/getDateInMil";
+import { push } from "../../utils/push";
 import { unshift } from "../../utils/unshift";
 import { crudUser } from "./User";
 class RequestHandler {
@@ -19,11 +20,7 @@ class RequestHandler {
   set toNameCollector(val) {
     this.toName = val;
   }
-  updateMyChatroomWhenSendingMessage(state) {
-    this.chat[this.chat.length] = {
-      ...state.msgData,
-    };
-  }
+
   checkIfIsNewContact(position) {
     if (this.chatroom[position].newContact)
       this.chatroom[position].newContact = false;
@@ -35,17 +32,24 @@ class RequestHandler {
 
   async createChat(toUser) {
     this.to = toUser.to;
-    this.chatroom = findAndRemove(this.chatroom, this.chatroom.length, {
-      var: "uid",
-      value: toUser.uid,
+    fetch(this.baseUrl + `/open`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...crudUser.user, toUserId: toUser.uid }),
+    }).then(() => {
+      this.chatroom = findAndRemove(this.chatroom, this.chatroom.length, {
+        var: "uid",
+        value: toUser.uid,
+      });
+      this.chatroom = unshift(this.chatroom, this.chatroom.length, toUser);
+      this.setState({ ...this.state, chatroom: this.chatroom });
     });
-    this.chatroom = unshift(this.chatroom, this.chatroom.length, toUser);
-    this.setState({ ...this.state, chatroom: this.chatroom });
   }
 
   async fetchMsgsToMe() {
     try {
-      this.setState({ ...this.state, loading: true });
       const res = await fetch(this.baseUrl + `/${crudUser.user.uid}`, {
         method: "POST",
         headers: {
@@ -54,13 +58,11 @@ class RequestHandler {
         body: JSON.stringify({ uid: this.to }),
       });
       const data = await res.json();
+      console.log(data);
       this.chat = data.chat;
       this.toMeChat = data.toMeChat;
-
-      setTimeout(() => this.setState({ ...this.state, loading: false }));
       return res.status;
     } catch (error) {
-      this.setState({ ...this.state, loading: false });
       console.log(error);
     }
   }
@@ -74,12 +76,10 @@ class RequestHandler {
           "Content-Type": "application/json",
         },
       }).then(() => {
-        this.setState({ ...this.state, loading: false });
         this.scrollToBottom();
       });
     } catch (error) {
       console.log(error);
-      this.setState({ ...this.state, loading: false });
     }
   }
 
@@ -152,13 +152,13 @@ class RequestHandler {
   }
 
   //função de atribuir o unread ao chatroom não aberto
-  setAsUnread(chatSender, currentChat) {
+  setAsUnread(msgBody, currentChat) {
     let i = 0;
-    if (currentChat && chatSender._id === currentChat._id) return;
+    if (currentChat && msgBody.to === currentChat.uid) return;
 
     for (i = 0; i < this.chatroom.length; i++) {
-      if (chatSender._id === this.chatroom[i]._id) {
-        this.chatroom[i].unread = chatSender.unread;
+      if (msgBody.from === this.chatroom[i].uid) {
+        this.chatroom[i].unread = true;
       }
     }
 
@@ -170,26 +170,22 @@ class RequestHandler {
     });
   }
 
-  orderInRealTimeChat(incomeChat) {
+  orderInRealTimeChat(msgBody) {
     let { i, b } = this.getChatroom();
     let hasChat = b;
-    this.setAsUnread(incomeChat.chatSender, this.chatroom[i]);
+    this.setAsUnread(msgBody, this.chatroom[i]);
     //aqui é onde eu confiro se o chat com o user quer está mandando msg está aberto, importante para as notificações
     if (hasChat) {
       this.chatroom[i].unread = false;
-      this.chatroom[i].chat[this.chatroom[i].chat.length] =
-        incomeChat.chatSender;
-    }
-
-    if (incomeChat.chatSender.from === this.to) {
-      this.chat[this.chat.length] = incomeChat.chatSender;
-      if (typeof this.setState !== "function") return;
-      this.setState({
-        ...this.state,
-        chat: this.chat,
-      });
-      this.scrollToBottom();
-    }
+      this.chat = push(this.chat, this.chat.length, msgBody);
+      console.log(this.chat);
+    } else return;
+    if (typeof this.setState !== "function") return;
+    this.setState({
+      ...this.state,
+      chat: this.chat,
+    });
+    this.scrollToBottom();
   }
 
   boolHandle(i) {
@@ -211,9 +207,12 @@ class RequestHandler {
     return false;
   }
 
-  newIncomeContactList(newContact) {
-    if (!this.chatroom) return;
-    this.chatroom = unshift(this.chatroom, this.chatroom.length, newContact);
+  newIncomeChatroom(chatroomWasOpen) {
+    this.chatroom = unshift(
+      this.chatroom,
+      this.chatroom.length,
+      chatroomWasOpen
+    );
     this.setState({ ...this.state, chatroom: this.chatroom });
   }
 
@@ -222,31 +221,17 @@ class RequestHandler {
     this.setState = setState;
   }
 
-  async openChat(userFromList) {
-    this.setState({
-      ...this.state,
-      loading: true,
-    });
-
-    crudChat.getToId(userFromList.uid);
-
-    await crudChat.fetchMsgsToMe().then(() => {
-      this.openHandler(userFromList);
+  async openChat(userFromList, resolve) {
+    this.getToId(userFromList.uid);
+    await this.fetchMsgsToMe().then(() => {
+      this.openHandler(userFromList, resolve);
     });
   }
 
-  openHandler(userFromList) {
+  openHandler(userFromList, resolve) {
     this.defineCurrentConversation();
     this.receiver = userFromList.name;
-    setTimeout(() => {
-      this.setState({
-        ...this.state,
-        chat: this.chat,
-        loading: false,
-        openChat: true,
-      });
-      this.scrollToBottom();
-    });
+    resolve({ status: "fulfil" });
   }
 
   scrollToBottom() {
@@ -261,6 +246,7 @@ class RequestHandler {
   }
 
   containsLink(msg) {
+    if (!msg) return msg;
     let n = msg.length;
     let httpsRef = "https";
     let link = "";
@@ -270,7 +256,7 @@ class RequestHandler {
     let str = "";
     let breakLoop = false;
     let j = 0;
-    console.log(n);
+
     if (n == 0) throw new Error("empty msg, shouldn't happen...");
 
     for (let i = 0; i < n; i++) {

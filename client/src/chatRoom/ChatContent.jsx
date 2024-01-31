@@ -5,7 +5,6 @@ import { crudUser } from "./HTTPrequest/User";
 // import TypingAnimated from "./TypingAnimated";
 
 const ChatContent = (prop) => {
-  console.log(prop.state.chat);
   return (
     <article
       className="conversation"

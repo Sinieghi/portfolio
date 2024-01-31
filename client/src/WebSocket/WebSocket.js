@@ -3,16 +3,14 @@ export const ws = new WebSocket("ws://localhost:8000");
 
 ws.onmessage = function (e) {
   const data = JSON.parse(e.data);
-  if (data.chatSender) {
-    crudChat.orderInRealTimeChat(data);
+  console.log(data);
+  if (data.msgBody) {
+    crudChat.orderInRealTimeChat(data.msgBody);
   } else if (data.removedContactTo) {
     crudChat.removeContactFromList(data.removedContactTo);
-  } else if (data.newContact) {
-    crudChat.newIncomeContactList(data.newContact);
+  } else if (data.chatroomWasOpen) {
+    crudChat.newIncomeChatroom(data.chatroomWasOpen);
   }
-  // else if (data.typing) {
-  //   crudChat.userIsTyping(data.typing);
-  // }
 };
 
 export function sendUid(id) {

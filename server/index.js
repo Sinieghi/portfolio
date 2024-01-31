@@ -30,7 +30,6 @@ export const ws = new WebSocketServer({ server });
 ws.on("connection", function connection(ws, wsReq) {
   console.log("Connected");
   ws.onmessage = function (e) {
-    console.log(JSON.parse(e.data));
     try {
       ws.uid = JSON.parse(e.data).uid;
     } catch (error) {
@@ -41,6 +40,3 @@ ws.on("connection", function connection(ws, wsReq) {
     Users.removeUser(ws.target.uid);
   };
 });
-
-chat.find("userCollection", null, {}).limit(5);
-console.log();

@@ -5,12 +5,12 @@ import MenuBar from "./Menu/MenuBar";
 import ChatRoom from "./chatRoom/ChatRoom";
 import Certs from "./myCerts/Certs";
 import { pathname } from "./utils/pathname";
-import { logEvent } from "firebase/analytics";
-import { analytics } from "./services/firebase";
+// import { logEvent } from "firebase/analytics";
+// import { analytics } from "./services/firebase";
 
 function App() {
   useEffect(() => {
-    logEvent(analytics, "page_view");
+    // logEvent(analytics, "page_view");
   }, []);
   return (
     <>

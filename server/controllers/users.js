@@ -2,7 +2,6 @@ import chatroom from "../db/db.js";
 import { InternalServerError } from "../errors/InternalError.js";
 import { ws } from "../index.js";
 export class Users {
-  constructor() {}
   static createUser(req, res) {
     try {
       const user = {};

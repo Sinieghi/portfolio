@@ -13,11 +13,7 @@ class ChatRoom extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      msgData: {
-        msg: "",
-        from: "",
-        to: "",
-      },
+      msg: "",
       loading: false,
       showContact: false,
       openChat: false,
@@ -34,7 +30,7 @@ class ChatRoom extends Component {
 
   handleChange(e) {
     const value = e.target.value;
-    this.setState({ ...this.state, msgData: { msg: value } });
+    this.setState({ ...this.state, msg: value });
     if (this.state.count == 0) {
       // userIsTyping(true, crudChat.to);
     }
@@ -47,26 +43,26 @@ class ChatRoom extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    if (this.state.msgData.msg === "") return;
+    if (this.state.msg === "") return;
     let msgData = {
       from: crudUser.user.uid,
       to: crudChat.to,
       date: new Date(),
-      msg: this.state.msgData.msg,
+      msg: this.state.msg,
     };
     this.setState({
       ...this.state,
       chat: push(this.state.chat, this.state.chat.length, msgData),
       loading: true,
-      msgData,
     });
     crudChat
-      .persisteConversation({ ...this.state })
-      .then(() => this.setState({ ...this.state, msgData: {} }));
+      .persisteConversation(msgData)
+      .then(() => this.setState({ ...this.state, msg: "", loading: false }))
+      .catch(() => this.setState({ ...this.state, loading: false }));
   }
 
   keys(e) {
-    if (this.state.msgData.msg === "") return;
+    if (this.state.msg === "") return;
     if (e.key === "Enter") this.handleSubmit(e);
   }
 
@@ -156,7 +152,11 @@ class ChatRoom extends Component {
                                 }}
                                 key={i}
                               >
-                                <IteratedLI chatroom={r} />
+                                <IteratedLI
+                                  chatroom={r}
+                                  state={this.state}
+                                  setState={this.setState.bind(this)}
+                                />
                                 <SmallCloseBtn
                                   handleClick={(e) => {
                                     crudChat.to = null;
@@ -204,7 +204,7 @@ class ChatRoom extends Component {
               id="text"
               name="msg"
               minLength={1}
-              value={this.state.msgData.msg}
+              value={this.state.msg}
               onChange={(e) => this.handleChange(e)}
             />
             <button className="btn_hover-scale submit_message">Send</button>
