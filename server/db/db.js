@@ -16,7 +16,6 @@ class ChatSchema {
     doc.docId = idGenerator(10 ** 7, 10 ** 9);
     doc = { ...doc, ...value };
     this[collection][this[collection].length] = doc;
-    console.log("should create", this[collection]);
     return this[collection];
   }
 
@@ -41,7 +40,6 @@ class ChatSchema {
     let a = [];
 
     for (let i = 0; i < this[variable].length; i++) {
-      console.log(this[variable][i], field);
       if (
         this[variable][i].to === field.to &&
         this[variable][i].from === field.from
@@ -49,7 +47,8 @@ class ChatSchema {
         a[a.length] = this[variable][i];
       }
     }
-    this[variable] = a;
+    console.log(a);
+    this["collection"] = a;
     return this;
   }
 

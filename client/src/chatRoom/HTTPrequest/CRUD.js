@@ -11,7 +11,7 @@ class RequestHandler {
   msg = "";
   to;
   chat = [];
-  toMeChat = null;
+  toMeChat = [];
   blocklist = [];
   chatroom = [];
   set setUser(val) {
@@ -58,9 +58,12 @@ class RequestHandler {
         body: JSON.stringify({ uid: this.to }),
       });
       const data = await res.json();
-      console.log(data);
       this.chat = data.chat;
       this.toMeChat = data.toMeChat;
+      //arrumar o fetch msg, não está atualizando o state quando abre o chat pela primeira vez.
+      for (let i = 0; i < this.toMeChat.length; i++) {
+        this.toMeChat[i].identifier = true;
+      }
       return res.status;
     } catch (error) {
       console.log(error);
@@ -136,7 +139,7 @@ class RequestHandler {
     console.log(this);
   }
 
-  //método responsável por entregar a posição do chatroom em que está aberto
+  //método responsável por entregar a posição do chatroom aberto
   getChatroom() {
     if (!this.chatroom) return { i: undefined, b: false };
     let n = this.chatroom.length;
@@ -174,7 +177,6 @@ class RequestHandler {
     let { i, b } = this.getChatroom();
     let hasChat = b;
     this.setAsUnread(msgBody, this.chatroom[i]);
-    //aqui é onde eu confiro se o chat com o user quer está mandando msg está aberto, importante para as notificações
     if (hasChat) {
       this.chatroom[i].unread = false;
       this.chat = push(this.chat, this.chat.length, msgBody);

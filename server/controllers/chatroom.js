@@ -25,20 +25,12 @@ export class Chatroom {
     const toMeChat = chatroom.findChat("msgCollection", {
       from: req.body.uid,
       to: JSON.parse(req.params.uid),
-    });
+    }).collection;
     const chat = chatroom.findChat("msgCollection", {
       from: JSON.parse(req.params.uid),
       to: req.body.uid,
-    });
-    console.log(
-      "loga aqui cara...",
-      chatroom.msgCollection,
-      JSON.parse(req.params.uid),
-      req.body.uid
-    );
-    res
-      .status(201)
-      .json({ chat: chat.msgCollection, toMeChat: toMeChat.msgCollection });
+    }).collection;
+    res.status(201).json({ chat: chat, toMeChat: toMeChat });
   }
 
   static updateChatroomWhenOpen(req, res) {
