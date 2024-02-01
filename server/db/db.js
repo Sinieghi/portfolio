@@ -47,7 +47,6 @@ class ChatSchema {
         a[a.length] = this[variable][i];
       }
     }
-    console.log(a);
     this["collection"] = a;
     return this;
   }

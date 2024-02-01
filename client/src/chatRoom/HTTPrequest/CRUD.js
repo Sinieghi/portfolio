@@ -10,13 +10,8 @@ class RequestHandler {
   }
   msg = "";
   to;
-  chat = [];
-  toMeChat = [];
-  blocklist = [];
   chatroom = [];
-  set setUser(val) {
-    this.user = val;
-  }
+
   set toNameCollector(val) {
     this.toName = val;
   }
@@ -58,13 +53,12 @@ class RequestHandler {
         body: JSON.stringify({ uid: this.to }),
       });
       const data = await res.json();
-      this.chat = data.chat;
-      this.toMeChat = data.toMeChat;
-      //arrumar o fetch msg, não está atualizando o state quando abre o chat pela primeira vez.
-      for (let i = 0; i < this.toMeChat.length; i++) {
-        this.toMeChat[i].identifier = true;
+      const myChat = data.chat;
+      const toMeChat = data.toMeChat;
+      for (let i = 0; i < toMeChat.length; i++) {
+        toMeChat[i].identifier = true;
       }
-      return res.status;
+      return { myChat, toMeChat };
     } catch (error) {
       console.log(error);
     }
@@ -91,15 +85,15 @@ class RequestHandler {
   }
 
   closeConversation() {
-    this.chat = [];
     this.setState({
       ...this.state,
-      chat: this.chat,
+      chat: [],
     });
   }
 
   static mergeMessageOperation(a, n, t, r) {
-    if (n == 0 || r == 0) return [];
+    if (n == 0) return t;
+    else if (r == 0) return a;
     let mA = [];
     let u = [];
     let i = 0;
@@ -126,17 +120,16 @@ class RequestHandler {
     return u;
   }
 
-  defineCurrentConversation() {
+  defineCurrentConversation(chats) {
     let { i } = this.getChatroom();
     this.receiver = this.chatroom[i].name;
     this.checkIfIsNewContact(i);
-    this.chat = RequestHandler.mergeMessageOperation(
-      this.chat,
-      this.chat.length,
-      this.toMeChat,
-      this.toMeChat.length
+    return RequestHandler.mergeMessageOperation(
+      chats.myChat,
+      chats.myChat.length,
+      chats.toMeChat,
+      chats.toMeChat.length
     );
-    console.log(this);
   }
 
   //método responsável por entregar a posição do chatroom aberto
@@ -177,36 +170,15 @@ class RequestHandler {
     let { i, b } = this.getChatroom();
     let hasChat = b;
     this.setAsUnread(msgBody, this.chatroom[i]);
-    if (hasChat) {
+    if (hasChat && typeof this.setState === "function") {
       this.chatroom[i].unread = false;
-      this.chat = push(this.chat, this.chat.length, msgBody);
-      console.log(this.chat);
-    } else return;
-    if (typeof this.setState !== "function") return;
-    this.setState({
-      ...this.state,
-      chat: this.chat,
-    });
-    this.scrollToBottom();
-  }
-
-  boolHandle(i) {
-    if (
-      this.toMeChat &&
-      this.toMeChat.chat.length == 0 &&
-      this.chatroom[i].chat.length > 0
-    )
-      return true;
-    else false;
-  }
-  boolHandler(i) {
-    if (
-      this.toMeChat &&
-      this.toMeChat.chat.length > 0 &&
-      this.chatroom[i].chat.length == 0
-    )
-      return true;
-    return false;
+      this.setState({
+        ...this.state,
+        chat: push(this.state.chat, this.state.chat.length, msgBody),
+        chatroom: this.chatroom,
+      });
+      this.scrollToBottom();
+    }
   }
 
   newIncomeChatroom(chatroomWasOpen) {
@@ -225,15 +197,16 @@ class RequestHandler {
 
   async openChat(userFromList, resolve) {
     this.getToId(userFromList.uid);
-    await this.fetchMsgsToMe().then(() => {
-      this.openHandler(userFromList, resolve);
+    //notes for commit: change the way i operate the chat obj, now is more readable
+    this.fetchMsgsToMe().then(({ toMeChat, myChat }) => {
+      this.openHandler(userFromList, resolve, { toMeChat, myChat });
     });
   }
 
-  openHandler(userFromList, resolve) {
-    this.defineCurrentConversation();
+  openHandler(userFromList, resolve, chats) {
+    const chat = this.defineCurrentConversation(chats);
     this.receiver = userFromList.name;
-    resolve({ status: "fulfil" });
+    resolve({ chat });
   }
 
   scrollToBottom() {
@@ -245,51 +218,6 @@ class RequestHandler {
         top: scrollControl.scrollHeight,
       });
     });
-  }
-
-  containsLink(msg) {
-    if (!msg) return msg;
-    let n = msg.length;
-    let httpsRef = "https";
-    let link = "";
-    let stStart = "";
-    let s = -1;
-    let e = -1;
-    let str = "";
-    let breakLoop = false;
-    let j = 0;
-
-    if (n == 0) throw new Error("empty msg, shouldn't happen...");
-
-    for (let i = 0; i < n; i++) {
-      for (let u = 0; u < httpsRef.length; u++) {
-        if (httpsRef[u] === msg[i + u]) stStart += msg[i + u];
-        else stStart = "";
-      }
-      if (stStart === httpsRef) s = i;
-      j = i;
-      while (stStart === httpsRef && !breakLoop) {
-        if (msg[j] !== " ") link += msg[j];
-        else breakLoop = true;
-        j++;
-        if (!msg[j]) breakLoop = true;
-      }
-      if (this.findEndBoolean(msg, s, e, i)) e = i;
-      if (s != -1 && e != -1) {
-        str += `<a href=${link}>${link}`;
-        str += `</a>`;
-        s = -1;
-        e = -1;
-        breakLoop = false;
-        link = "";
-      } else if (s == -1 && e == -1) str += msg[i];
-    }
-    //need to replace those positions with link <a></a>
-    console.log(s, e);
-    return str;
-  }
-  findEndBoolean(msg, s, e, i) {
-    return s != -1 && (msg[i + 1] === " " || !msg[i + 1]) && e == -1;
   }
 }
 

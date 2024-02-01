@@ -223,9 +223,7 @@ class ChatRoom extends Component {
     return a;
   }
 
-  handleClickCloseChatroom(e, chatroom) {
-    console.log(e, chatroom);
-  }
+  // handleClickCloseChatroom(e, chatroom) {}
 
   styleHandler(identifier) {
     let style = {};

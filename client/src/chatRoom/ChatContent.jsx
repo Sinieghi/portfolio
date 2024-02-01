@@ -2,6 +2,8 @@ import { timeConvertor } from "../utils/dateOrCurrencyFix";
 import { formatFirstName } from "../utils/formatUserName";
 import { crudChat } from "./HTTPrequest/CRUD";
 import { crudUser } from "./HTTPrequest/User";
+import RenderText from "./component/RenderText.jsx";
+
 // import TypingAnimated from "./TypingAnimated";
 
 const ChatContent = (prop) => {
@@ -17,7 +19,6 @@ const ChatContent = (prop) => {
         {prop.state.chat &&
           prop.state.chat.map((c, i) => {
             // if (c.displayTyping) return <TypingAnimated key={i} />;
-            console.log(c.msg);
             return (
               <div
                 key={i}
@@ -40,7 +41,7 @@ const ChatContent = (prop) => {
                       )}
                 </p>
                 {/* this is not working, anchor is just textContent here  */}
-                <p>{crudChat.containsLink(c.msg)}</p>
+                <RenderText msg={c.msg} />
                 <p className="date">{timeConvertor(c.date)}</p>
               </div>
             );

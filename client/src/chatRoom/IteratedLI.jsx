@@ -14,10 +14,10 @@ const IteratedLI = ({ chatroom, state, setState }) => {
         new Promise((resolve) => {
           crudChat.toNameCollector = chatroom.name;
           crudChat.openChat(chatroom, resolve);
-        }).then(() => {
+        }).then(({ chat }) => {
           setState({
             ...state,
-            chat: crudChat.chat,
+            chat: chat,
             loading: false,
             openChat: true,
           });
