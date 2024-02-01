@@ -14,6 +14,9 @@ const LoginForm = ({ setState, state }) => {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                onClick={() => {
+                  setState({ ...state, showLoginForm: false });
+                }}
               >
                 <span aria-hidden="true"></span>
               </button>
