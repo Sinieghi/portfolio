@@ -1,12 +1,13 @@
 import { findAndRemove } from "../../utils/findAndRemove";
+import { findOne } from "../../utils/findOne";
 import { getDateInMil } from "../../utils/getDateInMil";
 import { push } from "../../utils/push";
 import { unshift } from "../../utils/unshift";
 import { crudUser } from "./User";
 class RequestHandler {
   constructor() {
-    this.baseUrl = "/api/v1/chatroom";
-    this.baseMsgUrl = "/api/v1/messages";
+    this.baseUrl = "http://localhost:8000/api/v1/chatroom";
+    this.baseMsgUrl = "http://localhost:8000/api/v1/messages";
   }
   msg = "";
   to;
@@ -192,6 +193,7 @@ class RequestHandler {
   }
 
   newIncomeChatroom(chatroomWasOpen) {
+    if (findOne(this.chatroom, chatroomWasOpen.uid, "uid")) return;
     this.chatroom = unshift(
       this.chatroom,
       this.chatroom.length,

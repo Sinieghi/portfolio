@@ -248,10 +248,16 @@ export const Wrapper = styled.main`
     height: 4rem;
   }
 
+  .user_list {
+    padding: 10px 15px;
+    border: transparent;
+    background-color: var(--eld-rng-1);
+    margin: 5px;
+    border-radius: 3px;
+  }
   @media (max-width: 720px) {
     form {
-      flex-direction: column;
-      row-gap: 2rem;
+      padding: 5rem 0 !important;
     }
     .btn_hover-scale,
     .submit_message {

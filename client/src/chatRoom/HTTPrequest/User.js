@@ -6,13 +6,15 @@ export class User {
   userCollection = [];
   user = null;
   constructor() {
-    this.baseUserUrl = "/api/v1/user";
-    this.createUser.apply;
+    this.baseUserUrl = "http://localhost:8000/api/v1/user";
   }
 
   async createUser(data) {
     fetch(this.baseUserUrl, {
       method: "POST",
+      credentials: "include",
+      mode: "cors",
+
       headers: {
         "Content-Type": "application/json",
       },
@@ -50,6 +52,7 @@ export class User {
     try {
       const res = await fetch(this.baseUserUrl + "/list", {
         method: "GET",
+        mode: "cors",
         headers: {
           "Content-Type": "application/json",
         },
@@ -64,7 +67,7 @@ export class User {
     }
   }
 
-  async uploadAvatar(input, name) {
+  async uploadAvatar(input, name, resolve) {
     const [file] = input;
     if (!file) {
       return;
@@ -100,6 +103,7 @@ export class User {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             window.localStorage.setItem("imagePath", downloadURL);
+            resolve({ downloadURL });
             console.log("File available at", downloadURL);
           });
         }

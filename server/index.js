@@ -8,7 +8,6 @@ import { notFound } from "./middleware/not-found.js";
 import { fileURLToPath } from "url";
 import { WebSocketServer } from "ws";
 import chatRoute from "./route/chatroom.js";
-import chat from "./db/db.js";
 import { Users } from "./controllers/users.js";
 import { connectToCluster } from "./db/connect.js";
 const app = express();

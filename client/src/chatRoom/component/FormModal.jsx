@@ -69,12 +69,18 @@ FormModal.propTypes = {
 };
 function handleSubmit(e, user, reactSuper) {
   e.preventDefault();
-  crudUser.uploadAvatar(user.avatar, user.name).then(() => {
-    user.avatar = window.localStorage.getItem("imagePath");
+  new Promise((resolve) => {
+    crudUser.uploadAvatar(user.avatar, user.name, resolve).then(() => {});
+  }).then((url) => {
+    user.avatar = url.downloadURL;
+    console.log(user);
     crudUser
       .createUser(user)
       .then(() => {
-        reactSuper.setState({ ...reactSuper.state, showLoginForm: false });
+        reactSuper.setState({
+          ...reactSuper.state,
+          showLoginForm: false,
+        });
       })
       .catch((e) => {
         console.log(e);
