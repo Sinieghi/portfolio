@@ -26,7 +26,7 @@ const IteratedLI = ({ chatroom, state, setState }) => {
         });
       }}
     >
-      <div className="avatar">
+      <div className="image_cont">
         {<Avatar name={chatroom.name} avatar={chatroom.avatar} />}{" "}
       </div>
       {formatFirstName(chatroom.name, chatroom.name.length)}

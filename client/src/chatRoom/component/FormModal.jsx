@@ -17,7 +17,7 @@ const FormModal = ({ setState, state }) => {
       <fieldset>
         <div className="form-group">
           <label htmlFor="name" className="form-label mt-4">
-            Name
+            Name *
           </label>
           <input
             type="Name"
@@ -36,7 +36,7 @@ const FormModal = ({ setState, state }) => {
         </div>
         <div className="form-group">
           <label htmlFor="formFile" className="form-label mt-4">
-            Default file input example
+            Enter your avatar
           </label>
           <input
             className="form-control"
@@ -46,7 +46,7 @@ const FormModal = ({ setState, state }) => {
             style={{ maxWidth: "calc(100% - 1.75rem)" }}
             onChange={(e) => {
               setUser((user) => {
-                user.avatar = e.target.value;
+                user.avatar = e.target.files;
                 return user;
               });
             }}
@@ -69,13 +69,16 @@ FormModal.propTypes = {
 };
 function handleSubmit(e, user, reactSuper) {
   e.preventDefault();
-  crudUser
-    .createUser(user)
-    .then(() => {
-      reactSuper.setState({ ...reactSuper.state, showLoginForm: false });
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+  crudUser.uploadAvatar(user.avatar, user.name).then(() => {
+    user.avatar = window.localStorage.getItem("imagePath");
+    crudUser
+      .createUser(user)
+      .then(() => {
+        reactSuper.setState({ ...reactSuper.state, showLoginForm: false });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  });
 }
 export default FormModal;

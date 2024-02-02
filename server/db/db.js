@@ -62,12 +62,13 @@ class ChatSchema {
   }
 
   findOne(variable, field, value) {
-    if (value.length > 0) {
-      for (let i = 0; i < this[variable].length; i++) {
-        if (this[variable][i][field] === value) return this[variable][i];
-      }
+    let doc = null;
+    for (let i = 0; i < this[variable].length; i++) {
+      console.log(this[variable][i][field], value);
+      if (this[variable][i][field] === value) doc = this[variable][i];
     }
-    return null;
+
+    return doc;
   }
 
   findOneAndRemove(variable, field, value) {

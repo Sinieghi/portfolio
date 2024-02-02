@@ -19,10 +19,8 @@ const SmallCloseBtn = (prop) => {
       onMouseLeave={(e) => {
         e.target.style.backgroundColor = "transparent";
       }}
-      id="cl"
-    >
-      &times;
-    </button>
+      className="btn-close"
+    ></button>
   );
 };
 

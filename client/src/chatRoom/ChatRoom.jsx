@@ -40,10 +40,12 @@ class ChatRoom extends Component {
       this.setState({ ...this.state, count: 0 });
     }, 1000 * 5);
   }
-
+  submitBool() {
+    return this.state.msg === "" || this.state.sendMessageLoading;
+  }
   handleSubmit(e) {
     e.preventDefault();
-    if (this.state.msg === "") return;
+    if (this.submitBool()) return;
     let msgData = {
       from: crudUser.user.uid,
       to: crudChat.to,
@@ -53,16 +55,17 @@ class ChatRoom extends Component {
     this.setState({
       ...this.state,
       chat: push(this.state.chat, this.state.chat.length, msgData),
-      loading: true,
+      sendMessageLoading: true,
     });
     crudChat
       .persisteConversation(msgData)
-      .then(() => this.setState({ ...this.state, msg: "", loading: false }))
-      .catch(() => this.setState({ ...this.state, loading: false }));
+      .then(() =>
+        this.setState({ ...this.state, msg: "", sendMessageLoading: false })
+      )
+      .catch(() => this.setState({ ...this.state, sendMessageLoading: false }));
   }
 
   keys(e) {
-    if (this.state.msg === "") return;
     if (e.key === "Enter") this.handleSubmit(e);
   }
 
@@ -123,11 +126,8 @@ class ChatRoom extends Component {
               style={{
                 display: this.state.showContact ? "flex" : "none",
               }}
-              className="close"
-              id="cl"
-            >
-              &times;
-            </button>
+              className="btn-close"
+            ></button>
 
             <div className="contact-container">
               <ul className="user_message-container chat-open">
@@ -223,7 +223,9 @@ class ChatRoom extends Component {
     return a;
   }
 
-  // handleClickCloseChatroom(e, chatroom) {}
+  handleClickCloseChatroom() {
+    crudChat.closeConversation();
+  }
 
   styleHandler(identifier) {
     let style = {};

@@ -1,4 +1,5 @@
 export function userInitials(name) {
+  if (!name) return;
   let i = 0;
   let u = -1;
   let n = name.length;

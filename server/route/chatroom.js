@@ -13,5 +13,6 @@ router.route("/api/v1/messages").post(Chatroom.sendMessage);
 
 router.route("/api/v1/user").post(Users.createUser);
 router.route("/api/v1/user/list").get(Users.getUserList);
+// router.route("/api/v1/user/:uid").get(Users.getUser);
 
 export default router;

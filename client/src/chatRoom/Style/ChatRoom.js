@@ -80,7 +80,7 @@ export const Wrapper = styled.main`
       outline-style: groove;
     }
     .submit_message {
-      padding: 1.7rem;
+      padding: 1.35rem;
       font-size: 1.6rem;
       letter-spacing: 2px;
       font-family: "Courier New", Courier, monospace;
@@ -222,10 +222,13 @@ export const Wrapper = styled.main`
   .img {
     width: 100%;
     height: 100%;
+    border-radius: 50%;
   }
-  .avatar {
-    width: 4rem;
-    height: 4rem;
+  .image_cont {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: var(--shadow-1);
     h1 {
       font-size: 1.5rem;
     }

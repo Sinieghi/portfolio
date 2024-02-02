@@ -3,12 +3,13 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import Avatar from "./Avatar";
 import { crudChat } from "../HTTPrequest/CRUD";
+import { crudUser } from "../HTTPrequest/User";
 
 const UserList = ({ users, setState, state }) => {
   const [addContact, setAddContact] = useState(false);
   return (
     <Wrapper>
-      <div className="users_container">
+      <div className="users_container" style={{ overflowY: "scroll" }}>
         <button
           type="button"
           onClick={() =>
@@ -30,7 +31,13 @@ const UserList = ({ users, setState, state }) => {
               </div>
               {addContact && (
                 <button
-                  onClick={() => crudChat.createChat(e)}
+                  onClick={() => {
+                    if (!crudUser.user) {
+                      setState({ ...state, showLoginForm: true });
+                      return;
+                    }
+                    crudChat.createChat(e);
+                  }}
                   className="add_brn"
                 >
                   Add
@@ -52,6 +59,7 @@ const Wrapper = styled.div`
   z-index: 10;
   padding: 1rem;
   color: var(--grey-900);
+  top: 0;
   .users_container {
     position: relative;
     background-color: var(--white);

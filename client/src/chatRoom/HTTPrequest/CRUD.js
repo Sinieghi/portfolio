@@ -26,7 +26,9 @@ class RequestHandler {
   }
 
   async createChat(toUser) {
-    this.to = toUser.to;
+    if (crudUser.user.uid === toUser.uid) return;
+    this.to = toUser.uid;
+
     fetch(this.baseUrl + `/open`, {
       method: "POST",
       headers: {
@@ -85,6 +87,7 @@ class RequestHandler {
   }
 
   closeConversation() {
+    this.to = null;
     this.setState({
       ...this.state,
       chat: [],
@@ -170,7 +173,7 @@ class RequestHandler {
     let { i, b } = this.getChatroom();
     let hasChat = b;
     this.setAsUnread(msgBody, this.chatroom[i]);
-    if (hasChat && typeof this.setState === "function") {
+    if (this.boolForNewMsg(this.chatroom[i], msgBody, hasChat)) {
       this.chatroom[i].unread = false;
       this.setState({
         ...this.state,
@@ -179,6 +182,13 @@ class RequestHandler {
       });
       this.scrollToBottom();
     }
+  }
+  boolForNewMsg(currentConversation, msgBody, hasChat) {
+    return (
+      hasChat &&
+      typeof this.setState === "function" &&
+      currentConversation.uid == msgBody.from
+    );
   }
 
   newIncomeChatroom(chatroomWasOpen) {
