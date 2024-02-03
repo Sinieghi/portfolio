@@ -25,7 +25,7 @@ const FormModal = ({ setState, state }) => {
             id="name"
             name="name"
             placeholder="Enter Name"
-            style={{ maxWidth: "calc(100% - 1.75rem)" }}
+            style={{ padding: ".75rem 0" }}
             onChange={(e) => {
               setUser((user) => {
                 user.name = e.target.value;
@@ -43,7 +43,7 @@ const FormModal = ({ setState, state }) => {
             type="file"
             id="avatar"
             name="avatar"
-            style={{ maxWidth: "calc(100% - 1.75rem)" }}
+            style={{ padding: ".75rem 0" }}
             onChange={(e) => {
               setUser((user) => {
                 user.avatar = e.target.files;
