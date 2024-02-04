@@ -70,6 +70,7 @@ export class User {
   async uploadAvatar(input, name, resolve) {
     const [file] = input;
     if (!file) {
+      resolve();
       return;
     }
     //we have to break if no file

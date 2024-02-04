@@ -229,6 +229,7 @@ export const Wrapper = styled.main`
     height: 60px;
     border-radius: 50%;
     box-shadow: var(--shadow-1);
+    display: flex;
     h1 {
       font-size: 1.5rem;
     }

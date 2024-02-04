@@ -65,8 +65,9 @@ const Wrapper = styled.main`
     max-width: 100%;
     height: 100vh;
     background-image: url("https://firebasestorage.googleapis.com/v0/b/portfolio-8d5e6.appspot.com/o/pexels-sevenstorm-juhaszimrus-443383.jpg?alt=media&token=53c87685-8ede-4bd7-b467-a88c201178e4");
-    background-repeat: none;
-    background-size: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
   }
   .sec_two {
     height: fit-content;

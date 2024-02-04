@@ -70,10 +70,10 @@ FormModal.propTypes = {
 function handleSubmit(e, user, reactSuper) {
   e.preventDefault();
   new Promise((resolve) => {
-    crudUser.uploadAvatar(user.avatar, user.name, resolve).then(() => {});
+    crudUser.uploadAvatar(user.avatar, user.name, resolve);
   }).then((url) => {
-    user.avatar = url.downloadURL;
-    console.log(user);
+    const hasAlready = window.localStorage.getItem("imagePath");
+    if (url || hasAlready) user.avatar = url ? url.downloadURL : hasAlready;
     crudUser
       .createUser(user)
       .then(() => {

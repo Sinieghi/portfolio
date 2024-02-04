@@ -21,8 +21,16 @@ const UserList = ({ users, setState, state }) => {
           className="btn-close"
         ></button>
         {users.map((e, i) => {
+          e = isAlreadyAdded(e);
           return (
-            <div key={i} className="user" onClick={() => setAddContact(true)}>
+            <div
+              key={i}
+              className="user"
+              style={{
+                backgroundColor: setCardBackground(e.itsMe, e.hasAlreadyAdded),
+              }}
+              onClick={() => setAddContact(true)}
+            >
               <div className="image_cont">
                 <Avatar avatar={e.avatar} name={e.name} />
               </div>
@@ -50,7 +58,19 @@ const UserList = ({ users, setState, state }) => {
     </Wrapper>
   );
 };
-
+function isAlreadyAdded(user) {
+  for (let i = 0; i < crudChat.chatroom.length; i++) {
+    if (crudChat.chatroom[i].uid === user.uid) user.hasAlreadyAdded = true;
+    if (user.uid === crudUser.user.uid) user.itsMe = true;
+  }
+  return user;
+}
+function setCardBackground(itsMe, hasAlreadyAdded) {
+  console.log(itsMe, hasAlreadyAdded);
+  if (hasAlreadyAdded) return "var(--primary-200)";
+  if (itsMe) return "var(--primary-blue-300)";
+  return "";
+}
 const Wrapper = styled.div`
   background-color: var(--cus-shade-for-aside-popups);
   position: fixed;
@@ -92,6 +112,17 @@ const Wrapper = styled.div`
   .user {
     box-shadow: var(--shadow-1);
     position: relative;
+    display: flex;
+    padding: 1rem;
+    align-items: center;
+    column-gap: 15px;
+    font-size: 15px;
+    font-weight: 500;
+    margin: 5px 0;
+    cursor: pointer;
+    p {
+      margin-bottom: 0;
+    }
   }
 `;
 
