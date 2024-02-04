@@ -61,13 +61,13 @@ const UserList = ({ users, setState, state }) => {
 function isAlreadyAdded(user) {
   for (let i = 0; i < crudChat.chatroom.length; i++) {
     if (crudChat.chatroom[i].uid === user.uid) user.hasAlreadyAdded = true;
-    if (user.uid === crudUser.user.uid) user.itsMe = true;
   }
+  if (user.uid === crudUser.user.uid) user.itsMe = true;
   return user;
 }
 function setCardBackground(itsMe, hasAlreadyAdded) {
   if (hasAlreadyAdded) return "var(--primary-200)";
-  if (itsMe) return "var(--primary-blue-300)";
+  if (itsMe) return "var(--clr-primary-red-1)";
   return "";
 }
 const Wrapper = styled.div`

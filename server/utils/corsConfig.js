@@ -9,9 +9,15 @@ export function corsConfig(req, res, next) {
   );
   res.setHeader("Access-Control-Allow-Credentials", true);
   if (process.env.NODE_ENV === "production") {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:7000");
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "https://portfolio-8d5e6.web.app"
+    );
   } else {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:7000");
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "https://portfolio-8d5e6.web.app"
+    );
   }
   next();
 }
