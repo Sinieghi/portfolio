@@ -94,11 +94,11 @@ const InfoBtn = () => {
               }}
               data-popper-placement="bottom-start"
             >
-              <a className="dropdown-item" href="#">
-                Dropdown link
-              </a>
-              <a className="dropdown-item" href="#">
-                Dropdown link
+              <a
+                className="dropdown-item"
+                href="https://firebasestorage.googleapis.com/v0/b/portfolio-8d5e6.appspot.com/o/curriculo1.pdf?alt=media&token=433dff15-de0e-4fc1-82dc-dd3ffbf6ccc6"
+              >
+                Curriculum
               </a>
             </div>
           </div>

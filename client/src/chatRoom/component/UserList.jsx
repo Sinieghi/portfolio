@@ -66,7 +66,6 @@ function isAlreadyAdded(user) {
   return user;
 }
 function setCardBackground(itsMe, hasAlreadyAdded) {
-  console.log(itsMe, hasAlreadyAdded);
   if (hasAlreadyAdded) return "var(--primary-200)";
   if (itsMe) return "var(--primary-blue-300)";
   return "";

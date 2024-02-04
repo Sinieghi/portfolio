@@ -1,13 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
 import styled from "styled-components";
 import InfoBtn from "./Component/InfoBtn";
-
+import loginImg from "../assets/login-img.svg";
 const HomePage = () => {
   return (
     <Wrapper>
       <section className="sec_one">
-        <InfoBtn />
-        <h1>LUIZ GUILHERME</h1>
+        <div className="header_cont">
+          <h1>LUIZ GUILHERME</h1>
+          <InfoBtn />
+        </div>
       </section>
       <section className="sec_two">
         <h1>Latest projects</h1>
@@ -50,8 +52,20 @@ const HomePage = () => {
             </a>
           </div>
           <div className="img_container">
-            <div className="img_box">
-              <img src=""></img>
+            <a href="https://sage-crumble-6d8f59.netlify.app/login">
+              <div className="img_box">
+                <img src={loginImg}></img>
+              </div>
+            </a>
+            <div className="project_description">
+              <h2>GIT USERS</h2>
+              <p>
+                GitHub users, using a github API to build this frontend here the{" "}
+                <a href="https://github.com/Sinieghi/gitusers">code</a>
+              </p>
+              <p>
+                credits: <span>John Smilga</span>
+              </p>
             </div>
           </div>
         </div>
@@ -68,6 +82,20 @@ const Wrapper = styled.main`
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    position: relative;
+    .header_cont {
+      position: absolute;
+      bottom: 100px;
+      left: 200px;
+      column-gap: 30px;
+    }
+
+    h1 {
+      color: var(--white);
+      font-size: 40px;
+    }
+    .btn-group {
+    }
   }
   .sec_two {
     height: fit-content;
@@ -75,16 +103,17 @@ const Wrapper = styled.main`
     padding: 5rem 10rem;
     h1 {
       text-align: center;
-      font-size: 80px;
+      font-size: 40px;
     }
     .projects_container {
       display: grid;
       .img_container {
         display: flex;
         width: 100%;
+        gap: 30px;
         .img_box {
-          width: 400px;
-          height: 400px;
+          width: 300px;
+          height: 300px;
           img {
             width: 100%;
             height: 100%;
@@ -94,6 +123,55 @@ const Wrapper = styled.main`
       .allocate {
         display: flex;
         justify-content: end;
+      }
+      .project_description {
+        padding: 20px;
+        width: 400px;
+      }
+    }
+  }
+  @media (max-width: 1030px) {
+    .sec_one {
+      .header_cont {
+        left: 10px;
+      }
+    }
+    .sec_two {
+      .projects_container {
+        .img_container {
+          flex-direction: column;
+        }
+      }
+      .allocate {
+        display: grid !important;
+        a {
+          width: fit-content;
+        }
+        .project_description {
+          grid-area: p;
+        }
+        .img_box {
+          grid-area: a;
+        }
+        grid-template-areas: "a" "p";
+      }
+    }
+  }
+  @media (max-width: 655px) {
+    .sec_two {
+      padding: 5rem 0;
+      .projects_container {
+        width: 100%;
+        .img_container {
+          width: 100%;
+        }
+        .project_description {
+          width: 100%;
+          padding: 0;
+        }
+        .img_box {
+          width: 100%;
+        }
       }
     }
   }
