@@ -70,6 +70,24 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+      <section>
+        <div
+          className="badge-base LI-profile-badge"
+          data-locale="pt_BR"
+          data-size="large"
+          data-theme="dark"
+          data-type="VERTICAL"
+          data-vanity="luizguilhermedosanjos"
+          data-version="v1"
+        >
+          <a
+            className="badge-base__link LI-simple-link"
+            href="https://br.linkedin.com/in/luizguilhermedosanjos?trk=profile-badge"
+          >
+            Luiz Guilherme dos Anjos
+          </a>
+        </div>
+      </section>
     </Wrapper>
   );
 };
