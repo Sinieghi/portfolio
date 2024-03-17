@@ -8,6 +8,7 @@ const certs = [
 const pdfCerts = [
   "https://firebasestorage.googleapis.com/v0/b/portfolio-8d5e6.appspot.com/o/Certificado%20Curso%20NR%2010%20-%20Luis%20Guilherme%20dos%20Anjos.pdf?alt=media&token=06e07e62-26d7-4a58-b68e-917e418216ae",
   "https://firebasestorage.googleapis.com/v0/b/portfolio-8d5e6.appspot.com/o/Certificado%20Curso%20NR%2035%20-%20Luis%20Guilherme%20dos%20Anjos.pdf?alt=media&token=01b1da01-e190-48c1-8990-a120d9b638ef",
+  "https://firebasestorage.googleapis.com/v0/b/portfolio-8d5e6.appspot.com/o/course_certificate.pdf?alt=media&token=5c8280a4-fa97-43f1-812b-2d85cecf7e9a",
 ];
 
 const Certs = () => {
